@@ -9,6 +9,9 @@ STYLE_CHOICES = sorted([(item, item) for item in get_all_styles()])
 
 
 class SimpleSnippet(models.Model):
+    """
+        Rudimentary model. Minimal model field and methods for drf.
+    """
     code = models.TextField()
 
     def __repr__(self):
@@ -16,6 +19,9 @@ class SimpleSnippet(models.Model):
 
 
 class Snippet(models.Model):
+    """
+        Tutorial snippet.
+    """
     created = models.DateTimeField(auto_now_add=True)
     code = models.TextField()
 
@@ -34,5 +40,9 @@ class Snippet(models.Model):
 
 
 class ModelComment(models.Model):
+    """
+        Simple model for test serializer creating.
+        It is used in testing.
+    """
     email = models.CharField(max_length=30)
     content = models.CharField(max_length=30)
