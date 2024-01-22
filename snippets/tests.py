@@ -1,3 +1,4 @@
+import copy
 import io
 from datetime import datetime
 from rest_framework import serializers
@@ -17,6 +18,10 @@ class Comment:
         self.created = created or datetime.now()
 
 
+class IncorrectComment:
+    def __init__(self):
+        self.any_name = 158
+
 # ------ serializer ---------------------------------------------------------------------------------------------------
 
 
@@ -26,7 +31,10 @@ class CommentSerializer(serializers.Serializer):
     created = serializers.DateTimeField()
 
     def create(self, validated_data):
-        return models.ModelComment.objects.create(**validated_data)
+        email = validated_data.get('email')
+        content = validated_data.get('content')
+        created = validated_data.get('created')
+        return models.ModelComment.objects.create(email=email, content=content, created=created)
 
     def update(self, instance, validated_data):
         instance.email = validated_data.get('email', instance.email)
@@ -63,13 +71,20 @@ class SerializerCreatingTest(TestCase):
                       created=datetime.strptime(dict_comment['created'], "%Y-%m-%dT%H:%M:%S.%fZ")
                       )
 
+    test_queryset = models.ModelComment.objects.filter(content=dict_comment["content"])
+
     def test_data(self):
         json_data = json.loads(self.json_comment)
         assert json_data == self.dict_comment
 
     def test_serializer_for_data(self):
         serializer = CommentSerializer(data=self.dict_comment)
-        serializer.is_valid()
+        assert serializer.is_valid()
+        assert self.test_queryset.count() == 0
+        serializer.save()
+        assert self.test_queryset.count() == 1
+        self.test_queryset.delete()
+        assert self.test_queryset.count() == 0
 
         content = JSONRenderer().render(serializer.validated_data)
         assert content == self.json_comment.encode()
@@ -78,8 +93,7 @@ class SerializerCreatingTest(TestCase):
         stream_data = JSONParser().parse(stream)
         assert stream_data == self.dict_comment
 
-    def test_serializer_from_simple_class(self):
-
+    def test_serializer_for_simple_class(self):
         serializer = CommentSerializer(self.comment)
         assert self.dict_comment == serializer.data
 
@@ -96,6 +110,12 @@ class SerializerCreatingTest(TestCase):
         data = JSONParser().parse(stream)
         serializer = CommentSerializer(data=data)
         serializer.is_valid()
+        assert self.test_queryset.count() == 0
+        serializer.save()
+        assert self.test_queryset.count() == 1
+        self.test_queryset.delete()
+        assert self.test_queryset.count() == 0
+
 
         content = JSONRenderer().render(serializer.validated_data)
         assert content == self.json_comment.encode()
@@ -103,8 +123,19 @@ class SerializerCreatingTest(TestCase):
         stream_data = JSONParser().parse(stream)
         assert stream_data == self.dict_comment
 
-        # todo test serializer save method for model comment
-
     def test_serializer_from_model_class(self):
         pass
 
+    def test_serializer_for_incorrect_data(self):
+        incorrect_data = copy.deepcopy(self.dict_comment).update({"unexpected key": "hello"})
+        serializer = CommentSerializer(data=incorrect_data)
+        assert not serializer.is_valid()
+
+        incorrect_data = copy.deepcopy(self.dict_comment).pop("content")
+        serializer = CommentSerializer(data=incorrect_data)
+        assert not serializer.is_valid()
+
+        incorrect_comment = IncorrectComment()
+        serializer = CommentSerializer(incorrect_comment)
+        with self.assertRaises(AttributeError):
+            _ = serializer.data

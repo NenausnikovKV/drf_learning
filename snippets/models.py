@@ -46,3 +46,4 @@ class ModelComment(models.Model):
     """
     email = models.CharField(max_length=30)
     content = models.CharField(max_length=30)
+    created = models.DateTimeField()
