@@ -28,25 +28,6 @@ def snippet_list(request):
         return JsonResponse(serializer.errors, status=400)
 
 
-@api_view(['GET', 'POST'])
-def better_snippet_list(request, format=None):
-    """
-    List all code snippets, or create a new snippet.
-    """
-    if request.method == 'GET':
-        snippets = SimpleSnippet.objects.all()
-        serializer = SimpleSnippetSerializer(snippets, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        user = request.user
-        serializer = SimpleSnippetSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 @csrf_exempt
 def snippet_detail(request, pk):
     """
@@ -74,8 +55,28 @@ def snippet_detail(request, pk):
         return HttpResponse(status=204)
 
 
+@api_view(['GET', 'POST'])
+def drf_style_snippet_list(request, format=None):
+    """
+    List all code snippets, or create a new snippet.
+    Can use format suffix, e.g. ".json"
+    """
+    if request.method == 'GET':
+        snippets = SimpleSnippet.objects.all()
+        serializer = SimpleSnippetSerializer(snippets, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        user = request.user
+        serializer = SimpleSnippetSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 @api_view(['GET', 'PUT', 'DELETE'])
-def better_snippet_detail(request, pk, format=None):
+def drf_style_snippet_detail(request, pk, format=None):
     """
     Retrieve, update or delete a code snippet.
     """
@@ -103,7 +104,8 @@ def better_snippet_detail(request, pk, format=None):
 @csrf_exempt
 def snippet_highlighted(request, pk):
     """
-        Retrieve snippet highlighted
+        Retrieve snippet highlighted.
+        Return HttpResponse.
     """
     try:
         snippet = SimpleSnippet.objects.get(pk=pk)

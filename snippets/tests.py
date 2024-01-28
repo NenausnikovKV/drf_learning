@@ -50,7 +50,7 @@ class CommentSerializer(serializers.Serializer):
 class CommentModelSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ModelComment
-        fields = ["email"]
+        fields = ["email", "content", "created"]
 
 
 # ------ serializer test ----------------------------------------------------------------------------------------------
@@ -93,8 +93,19 @@ class SerializerCreatingTest(TestCase):
         stream_data = JSONParser().parse(stream)
         assert stream_data == self.dict_comment
 
-    def test_serializer_for_simple_class(self):
+    def test_serializer_for_class(self):
         serializer = CommentSerializer(self.comment)
+        assert self.dict_comment == serializer.data
+
+        content = JSONRenderer().render(serializer.data)
+        assert content == self.json_comment.encode()
+
+        stream = io.BytesIO(content)
+        stream_data = JSONParser().parse(stream)
+        assert stream_data == self.dict_comment
+
+    def test_serializer_for_model_class(self):
+        serializer = CommentModelSerializer(self.comment)
         assert self.dict_comment == serializer.data
 
         content = JSONRenderer().render(serializer.data)
@@ -116,15 +127,11 @@ class SerializerCreatingTest(TestCase):
         self.test_queryset.delete()
         assert self.test_queryset.count() == 0
 
-
         content = JSONRenderer().render(serializer.validated_data)
         assert content == self.json_comment.encode()
         stream = io.BytesIO(content)
         stream_data = JSONParser().parse(stream)
         assert stream_data == self.dict_comment
-
-    def test_serializer_from_model_class(self):
-        pass
 
     def test_serializer_for_incorrect_data(self):
         incorrect_data = copy.deepcopy(self.dict_comment).update({"unexpected key": "hello"})
