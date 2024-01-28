@@ -5,8 +5,8 @@ from snippets import views, view_functions
 urlpatterns = [
     path('', views.ApiRootView.as_view()),
 
-    path('simple_snippets/', view_functions.better_snippet_list, name='simple_snippet-list'),
-    path('simple_snippets/<int:pk>/', view_functions.better_snippet_detail, name='simple_snippet-detail'),
+    path('simple_snippets/', view_functions.drf_style_snippet_list, name='simple_snippet-list'),
+    path('simple_snippets/<int:pk>/', view_functions.drf_style_snippet_detail, name='simple_snippet-detail'),
     path('simple_snippets/<int:pk>/highlighted', view_functions.snippet_highlighted, name='simple_snippet-detail'),
 
     path('snippets/', views.SnippetList.as_view(), name='snippet-list'),
