@@ -62,7 +62,7 @@ class DRFStyleFunctionView(TestCase):
 
     def test_json_snippet_list(self):
         """
-            http http://127.0.0.1:8000/json_snippets/
+            http http://127.0.0.1:8000/simple_snippets/
         """
         code = "hello world"
         snippet = SimpleSnippet.objects.create(code=code)
@@ -77,7 +77,7 @@ class DRFStyleFunctionView(TestCase):
 
     def test_json_snippet_detail(self):
         """
-            http http://127.0.0.1:8000/json_snippets/1
+            http http://127.0.0.1:8000/simple_snippets/1/
         """
         code = "hello world"
         snippet = SimpleSnippet.objects.create(code=code)
@@ -90,6 +90,9 @@ class DRFStyleFunctionView(TestCase):
         snippet.delete()
 
     def test_highlighted(self):
+        """
+        http http://127.0.0.1:8000/simple_snippets/1/highlighted
+        """
         code = "hello world"
         snippet = SimpleSnippet.objects.create(code=code)
 
