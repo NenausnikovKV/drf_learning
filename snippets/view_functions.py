@@ -6,7 +6,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
 from snippets.models import SimpleSnippet
-from snippets.serializers import SimpleSnippetSerializer
+from snippets.simple_serializer import SimpleSnippetSerializer
 
 
 @api_view(['GET', 'POST'])

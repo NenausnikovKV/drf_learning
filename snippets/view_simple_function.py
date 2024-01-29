@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 
 from snippets.models import SimpleSnippet
-from snippets.serializers import SimpleSnippetSerializer
+from snippets.simple_serializer import SimpleSnippetSerializer
 
 
 def django_json_response(request):

@@ -111,3 +111,8 @@ class DRFStyleFunctionView(TestCase):
         self.assertContains(response, text="red")
 
         snippet.delete()
+
+"""
+    http -a admin:password123 POST http://127.0.0.1:8000/snippets/ code="print(789)"
+"""
+
