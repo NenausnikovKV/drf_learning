@@ -63,6 +63,16 @@ class DRFStyleFunctionView(TestCase):
     def test_json_snippet_list(self):
         """
             http http://127.0.0.1:8000/simple_snippets/
+
+            http http://127.0.0.1:8000/simple_snippets/ Accept:application/json
+            http http://127.0.0.1:8000/simple_snippets.json
+
+
+            http http://127.0.0.1:8000/simple_snippets/ Accept:text/html
+            http http://127.0.0.1:8000/simple_snippets.api
+
+            http --form POST http://127.0.0.1:8000/simple_snippets/ code="print(123)"
+            http --json POST http://127.0.0.1:8000/simple_snippets/ code="print(456)"
         """
         code = "hello world"
         snippet = SimpleSnippet.objects.create(code=code)

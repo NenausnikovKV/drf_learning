@@ -27,7 +27,8 @@ def snippet_list(request):
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+        else:
+            return JsonResponse(serializer.errors, status=400)
 
 
 @csrf_exempt
