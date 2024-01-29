@@ -14,6 +14,10 @@ class SimpleSnippet(models.Model):
     """
     code = models.TextField()
 
+    @property
+    def highlighted(self):
+        return "red"
+
     def __repr__(self):
         return f"snippet with code - {self.code}"
 

@@ -1,4 +1,6 @@
 import io
+import json
+from collections import OrderedDict
 
 from django import shortcuts
 from django.test import Client, TestCase
@@ -7,7 +9,7 @@ from rest_framework.parsers import JSONParser
 from snippets.models import SimpleSnippet
 
 
-class ViewFunctionTest(TestCase):
+class DjangoStyleViewFunctionTest(TestCase):
     client = Client()
 
     def test_json_response(self):
@@ -49,5 +51,50 @@ class ViewFunctionTest(TestCase):
         content_reader = io.BytesIO(response.content)
         data = JSONParser().parse(content_reader)
         self.assertIn("code", data)
+        correct_response_data = {'id': 1, 'code': 'hello world'}
+        self.assertEquals(data, correct_response_data)
+
+        snippet.delete()
+
+
+class DRFStyleFunctionView(TestCase):
+    client = Client()
+
+    def test_json_snippet_list(self):
+        """
+            http http://127.0.0.1:8000/json_snippets/
+        """
+        code = "hello world"
+        snippet = SimpleSnippet.objects.create(code=code)
+
+        address = shortcuts.reverse("simple_snippet_list")
+        response = self.client.get(address)
+        self.assertEquals(response.status_code, 200)
+        correct_response_data = [{'id': 1, 'code': 'hello world'}]
+        self.assertEquals(response.data, correct_response_data)
+
+        snippet.delete()
+
+    def test_json_snippet_detail(self):
+        """
+            http http://127.0.0.1:8000/json_snippets/1
+        """
+        code = "hello world"
+        snippet = SimpleSnippet.objects.create(code=code)
+
+        address = shortcuts.reverse("simple_snippet_detail", kwargs={"pk": 1})
+        response = self.client.get(address)
+        correct_response_data = {'id': 1, 'code': 'hello world'}
+        self.assertEquals(response.data, correct_response_data)
+
+        snippet.delete()
+
+    def test_highlighted(self):
+        code = "hello world"
+        snippet = SimpleSnippet.objects.create(code=code)
+
+        address = shortcuts.reverse("simple_highlighted", args=(1, ))
+        response = self.client.get(address)
+        self.assertContains(response, text="red")
 
         snippet.delete()
