@@ -1,12 +1,11 @@
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework import status
 from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
 from rest_framework.response import Response
 
-from snippets.models import SimpleSnippet
-from snippets.simple_serializer import SimpleSnippetSerializer
+from .models import CodeSnippet
+from .simple_serializer import TrivialSerializer
 
 
 @api_view(['GET', 'POST'])
@@ -16,12 +15,12 @@ def drf_style_snippet_list(request, format=None):
     Can use format suffix, e.g. ".json"
     """
     if request.method == 'GET':
-        snippets = SimpleSnippet.objects.all()
-        serializer = SimpleSnippetSerializer(snippets, many=True)
+        snippets = CodeSnippet.objects.all()
+        serializer = TrivialSerializer(snippets, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = SimpleSnippetSerializer(data=request.data)
+        serializer = TrivialSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -35,16 +34,16 @@ def drf_style_snippet_detail(request, pk, format=None):
     Retrieve, update or delete a code snippet.
     """
     try:
-        snippet = SimpleSnippet.objects.get(pk=pk)
-    except SimpleSnippet.DoesNotExist:
+        snippet = CodeSnippet.objects.get(pk=pk)
+    except CodeSnippet.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = SimpleSnippetSerializer(snippet)
+        serializer = TrivialSerializer(snippet)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = SimpleSnippetSerializer(snippet, data=request.data)
+        serializer = TrivialSerializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -62,8 +61,8 @@ def snippet_highlighted(request, pk):
         Return HttpResponse.
     """
     try:
-        snippet = SimpleSnippet.objects.get(pk=pk)
-    except SimpleSnippet.DoesNotExist:
+        snippet = CodeSnippet.objects.get(pk=pk)
+    except CodeSnippet.DoesNotExist:
         return HttpResponse(status=404)
     else:
         return HttpResponse(snippet.highlighted)
