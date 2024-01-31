@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.parsers import JSONParser
 
 from .models import CodeSnippet
-from .simple_serializer import TrivialSerializer
+from .serializers import TrivialSerializer
 
 
 def root_functions_view(request):
