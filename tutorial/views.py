@@ -11,5 +11,6 @@ class ApiRootView(APIView):
         return Response({
             'users': reverse('snippets:user_list', request=request, format=format),
             'class_snippets': reverse('snippets:snippet_list', request=request, format=format),
-            'function_snippets': reverse('function_view:simple_snippet_list', request=request, format=format),
+            'function_snippets': reverse('function_view:snippet_list', request=request, format=format),
+            'json_snippets': reverse("json_snippets:snippet_list", request=request)
         })
