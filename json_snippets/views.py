@@ -1,9 +1,10 @@
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 
 from .models import CodeSnippet
-from .serializers import TrivialSerializer
+from .serializers import CodeSnippetSerializer
 
 
 def root_functions_view(request):
@@ -22,12 +23,12 @@ def snippet_list(request):
     """
     if request.method == 'GET':
         snippets = CodeSnippet.objects.all()
-        serializer = TrivialSerializer(snippets, many=True)
+        serializer = CodeSnippetSerializer(snippets, many=True)
         return JsonResponse(serializer.data, safe=False)
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        serializer = TrivialSerializer(data=data)
+        serializer = CodeSnippetSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data, status=201)
@@ -46,12 +47,12 @@ def snippet_detail(request, pk):
         return HttpResponse(status=404)
 
     if request.method == 'GET':
-        serializer = TrivialSerializer(snippet)
+        serializer = CodeSnippetSerializer(snippet)
         return JsonResponse(serializer.data)
 
     elif request.method == 'PUT':
         data = JSONParser().parse(request)
-        serializer = TrivialSerializer(snippet, data=data)
+        serializer = CodeSnippetSerializer(snippet, data=data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)
