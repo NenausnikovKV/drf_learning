@@ -14,8 +14,8 @@ class ApiRootView(APIView):
 
     def get(self, request, format=None):
         return Response({
-            'users': reverse('user_list', request=request, format=format),
-            'snippets': reverse('snippet_list', request=request, format=format)
+            'users': reverse('snippets:user-list', request=request, format=format),
+            'snippets': reverse('snippets:snippet-list', request=request, format=format)
         })
 
 
@@ -51,8 +51,3 @@ class UserList(generics.ListAPIView):
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-
-
-
-
-
