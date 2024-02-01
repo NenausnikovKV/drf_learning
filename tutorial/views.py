@@ -9,8 +9,8 @@ class ApiRootView(APIView):
         # return HttpResponse("hello")
     def get(self, request, format=None):
         return Response({
-            'users': reverse('snippets:user_list', request=request, format=format),
-            'class_snippets': reverse('snippets:snippet_list', request=request, format=format),
+            'users': reverse('snippets:user-list', request=request, format=format),
+            'class_snippets': reverse('snippets:snippet-list', request=request, format=format),
             'function_snippets': reverse('function_view:snippet_list', request=request, format=format),
             'json_snippets': reverse("json_snippets:snippet_list", request=request)
         })
