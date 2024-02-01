@@ -2,10 +2,12 @@ from rest_framework import serializers
 
 # from .models import SimpleSnippet
 
-
+# todo write create and update methods
 class TrivialSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField()
     code = serializers.CharField(style={'base_template': 'textarea.html'})
+    is_correct = serializers.BooleanField()
 
 # class SimpleSnippetSerializer(serializers.Serializer):
 #     id = serializers.IntegerField(read_only=True)
