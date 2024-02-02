@@ -1,14 +1,18 @@
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
+from rest_framework.reverse import reverse as drf_reverse
 
 from .models import CodeSnippet
 from .serializers import CodeSnippetSerializer
 
 
 def root_functions_view(request):
-    return HttpResponse("hello")
+    addresses = {
+        "json_response": drf_reverse("json_snippets:json_response", request=request),
+        "snippet_list": drf_reverse("json_snippets:snippet_list", request=request),
+    }
+    return JsonResponse(data=addresses)
 
 
 def django_json_response(request):

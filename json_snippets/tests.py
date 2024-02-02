@@ -36,9 +36,20 @@ class DjangoStyleViewFunctionTest(TestCase):
     def tearDown(cls):
         CodeSnippet.objects.all().delete()
 
-    def test_json_response(self):
+    def test_root_page(self):
         """
             http http://127.0.0.1:8000/json/
+        """
+        address = shortcuts.reverse("json_snippets:root")
+        response = self.client.get(address)
+        content_reader = io.BytesIO(response.content)
+        data = JSONParser().parse(content_reader)
+        self.assertIn("json_response", data)
+        self.assertIn("snippet_list", data)
+
+    def test_json_response(self):
+        """
+            http http://127.0.0.1:8000/json/json_response/
         """
         address = shortcuts.reverse("json_snippets:json_response")
         response = self.client.get(address)
