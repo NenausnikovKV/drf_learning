@@ -10,11 +10,10 @@ from .models import CodeSnippet
 
 class JsonSnippetsTest(TestCase):
 
-    def setUpTestData(self):
+    def setUp(self):
         self.client = Client()
 
-    @classmethod
-    def tearDown(cls):
+    def tearDown(self):
         CodeSnippet.objects.all().delete()
 
     def test_root_page(self):
