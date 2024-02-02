@@ -4,7 +4,6 @@ from django import shortcuts
 from django.db import transaction
 from django.test import TestCase, Client
 from rest_framework.parsers import JSONParser
-from rest_framework.reverse import reverse as drf_reverse
 
 from .models import CodeSnippet
 
