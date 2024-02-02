@@ -9,11 +9,9 @@ from .models import CodeSnippet
 
 
 class JsonSnippetsTest(TestCase):
-    client = Client()
 
-    @classmethod
-    def setUpTestData(cls):
-        pass
+    def setUpTestData(self):
+        self.client = Client()
 
     @classmethod
     def tearDown(cls):
