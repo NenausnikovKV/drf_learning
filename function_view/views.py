@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from .models import CodeSnippet
-from .simple_serializer import TrivialSerializer
+from .serializers import CodeSerializer
 
 
 def root_functions_view(request):
@@ -20,11 +20,11 @@ def snippet_list(request, format=None):
     """
     if request.method == 'GET':
         snippets = CodeSnippet.objects.all()
-        serializer = TrivialSerializer(snippets, many=True)
+        serializer = CodeSerializer(snippets, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = TrivialSerializer(data=request.data)
+        serializer = CodeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -43,11 +43,11 @@ def snippet_detail(request, pk, format=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = TrivialSerializer(snippet)
+        serializer = CodeSerializer(snippet)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = TrivialSerializer(snippet, data=request.data)
+        serializer = CodeSerializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
