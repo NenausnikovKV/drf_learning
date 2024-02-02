@@ -8,29 +8,10 @@ from rest_framework.parsers import JSONParser
 from .models import CodeSnippet
 
 
-class DjangoStyleViewFunctionTest(TestCase):
-    client = Client()
-    data = {
-        "id": 1,
-        "name": "addition",
-        "code": "f = 7+9",
-        "is_correct": True,
-    }
+class JsonSnippetsTest(TestCase):
 
-    @property
-    def full_data(self):
-        """
-            Return data dict with id key if id key has not existed.
-        """
-        try:
-            return dict(id=1, **self.data)
-        except TypeError:
-            # Raise TypeError if key id already exists
-            return self.data
-
-    @classmethod
-    def setUpTestData(cls):
-        CodeSnippet.objects.create(**cls.data)
+    def setUpTestData(self):
+        self.client = Client()
 
     @classmethod
     def tearDown(cls):
@@ -63,11 +44,21 @@ class DjangoStyleViewFunctionTest(TestCase):
         """
             http http://127.0.0.1:8000/json/snippets/
         """
+
+        big_id = 10264
+        data = {
+            "id": big_id,
+            "name": "addition",
+            "code": "f = 7+9",
+            "is_correct": True,
+        }
+        with transaction.atomic():
+            CodeSnippet.objects.create(**data)
         address = shortcuts.reverse("json_snippets:snippet_list")
         response = self.client.get(address)
         content_reader = io.BytesIO(response.content)
-        data = JSONParser().parse(content_reader)
-        self.assertEquals(data, [self.full_data])
+        response_data = JSONParser().parse(content_reader)
+        self.assertEquals(response_data, [data])
 
     def test_create_snippet(self):
         """
@@ -105,12 +96,22 @@ class DjangoStyleViewFunctionTest(TestCase):
             http http://127.0.0.1:8000/json/snippets/1
         """
 
-        address = shortcuts.reverse("json_snippets:snippet_detail", kwargs={"pk": 1})
+        big_id = 10265
+        data = {
+            "id": big_id,
+            "name": "addition",
+            "code": "f = 7+9",
+            "is_correct": True,
+        }
+        with transaction.atomic():
+            CodeSnippet.objects.create(**data)
+
+        address = shortcuts.reverse("json_snippets:snippet_detail", kwargs={"pk": big_id})
         response = self.client.get(address)
         content_reader = io.BytesIO(response.content)
-        data = JSONParser().parse(content_reader)
-        self.assertIn("code", data)
-        self.assertEquals(data, self.full_data)
+        response_data = JSONParser().parse(content_reader)
+        self.assertIn("code", response_data)
+        self.assertEquals(response_data, data)
 
     def test_put_snippet(self):
         """
@@ -122,7 +123,7 @@ class DjangoStyleViewFunctionTest(TestCase):
         with transaction.atomic():
             CodeSnippet.objects.create(id=big_id, name="start_name", code="start code", is_correct=False)
 
-        address = shortcuts.reverse("json_snippets:snippet_detail", kwargs={"pk": 1})
+        address = shortcuts.reverse("json_snippets:snippet_detail", kwargs={"pk": big_id})
         new_name = "new_name"
         new_code = "new code"
         new_is_correct = True
@@ -133,6 +134,7 @@ class DjangoStyleViewFunctionTest(TestCase):
             "is_correct": new_is_correct,
         }
         response = self.client.put(address, data=put_data, content_type="application/json")
+        self.assertEquals(response.status_code, 200)
         content_reader = io.BytesIO(response.content)
         response_data = JSONParser().parse(content_reader)
 
