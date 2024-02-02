@@ -72,7 +72,7 @@ class JsonSnippetsTest(TestCase):
             "code": "print('hello')",
             "is_correct": True,
         }
-
+        # todo add test create from form data
         response = self.client.post(address, data=post_data, content_type="application/json")
         content_reader = io.BytesIO(response.content)
         response_data = JSONParser().parse(content_reader)
