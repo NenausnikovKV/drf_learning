@@ -10,11 +10,10 @@ from .models import CodeSnippet
 
 class JsonSnippetsTest(TestCase):
 
-    def setUpTestData(self):
+    def setUp(self):
         self.client = Client()
 
-    @classmethod
-    def tearDown(cls):
+    def tearDown(self):
         CodeSnippet.objects.all().delete()
 
     def test_root_page(self):
@@ -72,7 +71,7 @@ class JsonSnippetsTest(TestCase):
             "code": "print('hello')",
             "is_correct": True,
         }
-
+        # todo add test create from form data
         response = self.client.post(address, data=post_data, content_type="application/json")
         content_reader = io.BytesIO(response.content)
         response_data = JSONParser().parse(content_reader)

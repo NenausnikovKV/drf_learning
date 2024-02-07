@@ -1,18 +1,34 @@
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
+import json
+
+from django import shortcuts
+from django.http import HttpResponse, HttpResponsePermanentRedirect
 from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, renderer_classes, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.renderers import BrowsableAPIRenderer, OpenAPIRenderer, JSONRenderer
 from rest_framework.response import Response
+from rest_framework.reverse import reverse as drf_reverse
 
 from .models import CodeSnippet
-from .simple_serializer import TrivialSerializer
+from .serializers import CodeSerializer
 
 
-def root_functions_view(request):
-    return HttpResponse("hello")
+def redirect_to_root(request):
+    address = shortcuts.reverse("function_view:root")
+    return HttpResponsePermanentRedirect(address)
+
+
+@api_view(['GET'])
+# @renderer_classes([BrowsableAPIRenderer, JSONRenderer])
+def root_functions_view(request, format=None):
+    addresses = {
+        "snippet_list": drf_reverse("function_view:snippet_list", request=request),
+    }
+    return Response(addresses)
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([AllowAny])
 def snippet_list(request, format=None):
     """
     List all code snippets, or create a new snippet.
@@ -20,11 +36,11 @@ def snippet_list(request, format=None):
     """
     if request.method == 'GET':
         snippets = CodeSnippet.objects.all()
-        serializer = TrivialSerializer(snippets, many=True)
+        serializer = CodeSerializer(snippets, many=True)
         return Response(serializer.data)
 
     elif request.method == 'POST':
-        serializer = TrivialSerializer(data=request.data)
+        serializer = CodeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -33,6 +49,7 @@ def snippet_list(request, format=None):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([AllowAny])
 def snippet_detail(request, pk, format=None):
     """
     Retrieve, update or delete a code snippet.
@@ -43,11 +60,11 @@ def snippet_detail(request, pk, format=None):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        serializer = TrivialSerializer(snippet)
+        serializer = CodeSerializer(snippet)
         return Response(serializer.data)
 
     elif request.method == 'PUT':
-        serializer = TrivialSerializer(snippet, data=request.data)
+        serializer = CodeSerializer(snippet, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -58,12 +75,13 @@ def snippet_detail(request, pk, format=None):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-@csrf_exempt
+@api_view(['GET'])
 def snippet_highlighted(request, pk):
     """
         Retrieve snippet highlighted.
         Return HttpResponse.
     """
+    # todo rewrite to template response
     try:
         snippet = CodeSnippet.objects.get(pk=pk)
     except CodeSnippet.DoesNotExist:
