@@ -152,7 +152,7 @@ class JsonSnippetsTest(TestCase):
 
     def test_delete_snippet(self):
         """
-            http DELETE http://127.0.0.1:8000/json/snippets/1
+            http DELETE http://127.0.0.1:8000/json/snippets/10267
         """
         # I choose huge id and hope testDB never creates so big table
         big_id = 10267

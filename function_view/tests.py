@@ -66,7 +66,7 @@ class DRFStyleFunctionView(TestCase):
 
     def test_create_snippet(self):
         """
-            http POST http://127.0.0.1:8000/functions/snippets/ code="print(456)" name="assd" is_correct=true
+            http -a kostya:kostya  POST http://127.0.0.1:8000/functions/snippets/ code="print(456)" name="assd" is_correct=true
         """
         address = shortcuts.reverse("function_view:snippet_list")
 
@@ -130,7 +130,7 @@ class DRFStyleFunctionView(TestCase):
 
     def test_put_snippet(self):
         """
-            http PUT http://127.0.0.1:8000/functions/snippets/ code="print(456)" name="assd" is_correct=true
+            http -a kostya:kostya PUT http://127.0.0.1:8000/functions/snippets/ code="print(456)" name="assd" is_correct=true
         """
 
         login_success = self.client.login(username="kostya", email="kostya@mail.com", password="kostya")
@@ -178,7 +178,7 @@ class DRFStyleFunctionView(TestCase):
 
     def test_delete_snippet(self):
         """
-            http DELETE http://127.0.0.1:8000/functions/snippets/10267
+            http -a kostya:kostya DELETE http://127.0.0.1:8000/functions/snippets/10267
         """
         # I choose huge id and hope testDB never creates so big table
         big_id = 10267
@@ -200,3 +200,24 @@ class DRFStyleFunctionView(TestCase):
         with self.assertRaises(CodeSnippet.DoesNotExist):
             wrong_id = big_id
             _ = CodeSnippet.objects.get(id=wrong_id)
+
+    def test_static_highlight_page(self):
+        """
+            http  http://127.0.0.1:8000/functions/snippets/10268/highlighted
+        """
+        big_id = 10268
+        data = {
+            "id": big_id,
+            "name": "start_name",
+            "code": "start code",
+            "is_correct": False,
+            "owner": self.user
+        }
+        with transaction.atomic():
+            CodeSnippet.objects.create(**data)
+        big_id_queryset = CodeSnippet.objects.filter(id=big_id)
+        self.assertTrue(big_id_queryset.exists())
+
+        address = shortcuts.reverse("function_view:highlighted", kwargs={"pk": big_id})
+        response = self.client.get(address)
+        self.assertContains(response, text="red")
