@@ -4,12 +4,13 @@ from django import shortcuts
 from django.http import HttpResponse, HttpResponsePermanentRedirect
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
 from rest_framework.renderers import BrowsableAPIRenderer, OpenAPIRenderer, JSONRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse as drf_reverse
 
 from .models import CodeSnippet
+from .permissions import IsOwnerOrReadOnly
 from .serializers import CodeSerializer
 
 
@@ -28,7 +29,8 @@ def root_functions_view(request, format=None):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([AllowAny])
+# @permission_classes([AllowAny])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def snippet_list(request, format=None):
     """
     List all code snippets, or create a new snippet.
@@ -42,14 +44,14 @@ def snippet_list(request, format=None):
     elif request.method == 'POST':
         serializer = CodeSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([AllowAny])
+@permission_classes([IsOwnerOrReadOnly])
 def snippet_detail(request, pk, format=None):
     """
     Retrieve, update or delete a code snippet.
@@ -66,7 +68,7 @@ def snippet_detail(request, pk, format=None):
     elif request.method == 'PUT':
         serializer = CodeSerializer(snippet, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
