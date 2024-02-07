@@ -180,7 +180,9 @@ class DRFStyleFunctionView(TestCase):
         """
             http -a kostya:kostya DELETE http://127.0.0.1:8000/functions/snippets/10267
         """
-        # I choose huge id and hope testDB never creates so big table
+        login_success = self.client.login(username="kostya", email="kostya@mail.com", password="kostya")
+        self.assertTrue(login_success)
+
         big_id = 10267
         data = {
             "id": big_id,
