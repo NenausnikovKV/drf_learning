@@ -9,5 +9,9 @@ class CodeSnippet(models.Model):
 
     owner = models.ForeignKey('auth.User', related_name='code_snippets', on_delete=models.CASCADE)
 
+    @property
+    def highlighted(self):
+        return "red"
+
     def __repr__(self):
         return f"snippet with code - {self.code}"

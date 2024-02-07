@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponsePermanentRedirect
 from rest_framework import status
 from rest_framework.decorators import api_view, renderer_classes, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticatedOrReadOnly
-from rest_framework.renderers import BrowsableAPIRenderer, OpenAPIRenderer, JSONRenderer
+from rest_framework.renderers import BrowsableAPIRenderer, OpenAPIRenderer, JSONRenderer, StaticHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.reverse import reverse as drf_reverse
 
@@ -78,12 +78,8 @@ def snippet_detail(request, pk, format=None):
 
 
 @api_view(['GET'])
+@renderer_classes([StaticHTMLRenderer])
 def snippet_highlighted(request, pk):
-    """
-        Retrieve snippet highlighted.
-        Return HttpResponse.
-    """
-    # todo rewrite to template response
     try:
         snippet = CodeSnippet.objects.get(pk=pk)
     except CodeSnippet.DoesNotExist:
