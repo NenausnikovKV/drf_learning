@@ -5,7 +5,7 @@ from . import views
 app_name = "snippets"
 
 urlpatterns = [
-    path('', views.ApiRootView.as_view()),
+    path('', views.ApiRootView.as_view(), name="root"),
 
     path('snippets/', views.SnippetList.as_view(), name='snippet-list'),
     path('snippets/<int:pk>/', views.SnippetDetail.as_view(), name='snippet-detail'),
