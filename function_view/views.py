@@ -44,7 +44,7 @@ def snippet_list(request, format=None):
     elif request.method == 'POST':
         serializer = CodeSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -68,7 +68,7 @@ def snippet_detail(request, pk, format=None):
     elif request.method == 'PUT':
         serializer = CodeSerializer(snippet, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(owner=request.user)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

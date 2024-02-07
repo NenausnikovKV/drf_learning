@@ -9,4 +9,3 @@ class CodeSerializer(serializers.ModelSerializer):
     class Meta:
         model = CodeSnippet
         fields = "__all__"
-

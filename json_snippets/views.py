@@ -32,7 +32,6 @@ def snippet_list(request):
 
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        data.update(owner=request.user)
         serializer = CodeSnippetSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
