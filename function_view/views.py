@@ -50,7 +50,6 @@ def snippet_list(request, format=None):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticatedOrReadOnly])
 def snippet_detail(request, pk, format=None):

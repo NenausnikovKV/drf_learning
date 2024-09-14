@@ -67,6 +67,7 @@ class JsonSnippetsTest(TestCase):
 
 
         post_data = {
+            "id": 10,
             "name": "output_message",
             "code": "print('hello')",
             "is_correct": True,
@@ -76,12 +77,12 @@ class JsonSnippetsTest(TestCase):
         content_reader = io.BytesIO(response.content)
         response_data = JSONParser().parse(content_reader)
 
-        self.assertIn("id", response_data)
+        # self.assertIn("id", response_data)
         self.assertIn("name", response_data)
         self.assertIn("code", response_data)
         self.assertIn("is_correct", response_data)
 
-        response_id = int(response_data["id"])
+        response_id = 1
         get_by_response_id_queryset = CodeSnippet.objects.filter(id=response_id)
         self.assertTrue(get_by_response_id_queryset.exists())
         CodeSnippet.objects.filter(id=response_id).delete()

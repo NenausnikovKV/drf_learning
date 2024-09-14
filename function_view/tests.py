@@ -6,8 +6,7 @@ from django.db import transaction
 from django.test import TestCase, Client
 from rest_framework.parsers import JSONParser
 
-from function_view.models import CodeSnippet
-from snippets.models import SimpleSnippet
+from .models import CodeSnippet
 
 
 class DRFStyleFunctionView(TestCase):

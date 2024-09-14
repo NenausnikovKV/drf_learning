@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "snippets",
     "function_view",
     "json_snippets",
+    "viewset_snippets",
 ]
 
 MIDDLEWARE = [

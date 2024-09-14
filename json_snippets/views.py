@@ -35,7 +35,7 @@ def snippet_list(request):
         serializer = CodeSnippetSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse(serializer.data, status=201)
+            return JsonResponse(serializer.validated_data, status=201)
         else:
             return JsonResponse(serializer.errors, status=400)
 
